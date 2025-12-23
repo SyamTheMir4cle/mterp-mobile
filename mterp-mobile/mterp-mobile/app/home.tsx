@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'rea
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { LogOut, Wrench, ClipboardList, Clock, Truck, CheckSquare, AlertCircle, ChevronLeft } from 'lucide-react-native';
+import { LogOut, Wrench, ClipboardList, Clock, Truck, CheckSquare, AlertCircle, ChevronLeft, ProjectorIcon, HardHatIcon } from 'lucide-react-native';
 
 export default function HomeScreen() {
   const [user, setUser] = useState<any>(null);
@@ -46,7 +46,25 @@ export default function HomeScreen() {
         {/* MAIN GRID */}
         <View style={styles.gridContainer}>
           
-          {/* BIG CARD: Tool Tracking */}
+          <TouchableOpacity 
+            style={styles.bigCard} 
+            onPress={() => router.push('/projects' as any)}
+            activeOpacity={0.9}
+          >
+            <View style={styles.bigCardContent}>
+              <LinearGradient colors={['#f0bb0dff', '#514d8a']} style={styles.iconBoxBig}>
+                <HardHatIcon size={32} color="white" />
+              </LinearGradient>
+              <View>
+                <Text style={styles.cardTitle}>Projects</Text>
+                <Text style={styles.cardSubtitle}>Manage Projects</Text>
+              </View>
+            </View>
+            <View style={styles.arrowCircle}>
+              <ChevronLeft size={20} color="#312e59" style={{ transform: [{ rotate: '180deg' }] }} />
+            </View>
+          </TouchableOpacity>
+
           <TouchableOpacity 
             style={styles.bigCard} 
             onPress={() => router.push('/tools' as any)}

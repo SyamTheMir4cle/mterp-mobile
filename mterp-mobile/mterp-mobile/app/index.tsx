@@ -79,6 +79,12 @@ export default function LoginScreen() {
               )}
             </LinearGradient>
           </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => router.push('/register' as any)} style={{ marginTop: 20 }}>
+             <Text style={{ textAlign: 'center', color: '#64748B', fontWeight: '600' }}>
+               Belum punya akses? <Text style={{ color: '#312e59', fontWeight: 'bold' }}>Daftar Akun</Text>
+             </Text>
+          </TouchableOpacity>
         </View>
       </View>
       
