@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking, Share } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
-import { ChevronLeft, FileText, CheckCircle2, TrendingUp, Download, Share2 } from 'lucide-react-native';
+import { ChevronLeft, FileText, CheckCircle2, TrendingUp, Download, Share2, Wrench } from 'lucide-react-native';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 
@@ -79,7 +79,7 @@ export default function ProjectDetailScreen() {
     }
   };
 
-  return (
+return (
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
@@ -94,7 +94,6 @@ export default function ProjectDetailScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* TABS */}
       <View style={styles.tabs}>
         <TouchableOpacity style={[styles.tab, activeTab === 'overview' && styles.activeTab]} onPress={() => setActiveTab('overview')}>
           <Text style={[styles.tabText, activeTab === 'overview' && styles.activeTabText]}>Overview</Text>
@@ -120,18 +119,30 @@ export default function ProjectDetailScreen() {
               </View>
             </View>
 
-            {/* Action Button */}
-            <TouchableOpacity 
-              style={styles.actionBtn} 
-              onPress={() => router.push({ pathname: '/daily-report', params: { project: JSON.stringify(project) } } as any)}
-            >
-              <CheckCircle2 color="#fff" size={20} />
-              <Text style={styles.actionBtnText}>Buat Laporan Harian</Text>
-            </TouchableOpacity>
+            {/* BUTTON GRID: Actions */}
+            <View style={styles.gridAction}>
+              {/* Tombol Laporan Harian */}
+              <TouchableOpacity 
+                style={[styles.actionBtn, { flex: 1, backgroundColor: '#10B981' }]} 
+                onPress={() => router.push({ pathname: '/daily-report', params: { project: JSON.stringify(project) } } as any)}
+              >
+                <CheckCircle2 color="#fff" size={24} />
+                <Text style={styles.actionBtnText}>Laporan Harian</Text>
+              </TouchableOpacity>
+
+              {/* Tombol Manajemen Alat (BARU) */}
+              <TouchableOpacity 
+                style={[styles.actionBtn, { flex: 1, backgroundColor: '#F59E0B' }]} 
+                onPress={() => router.push({ pathname: '/project-tools', params: { projectId: project._id, projectName: project.nama } } as any)}
+              >
+                <Wrench color="#fff" size={24} />
+                <Text style={styles.actionBtnText}>Alat Proyek</Text>
+              </TouchableOpacity>
+            </View>
 
             {/* Work Items List */}
             <Text style={styles.sectionTitle}>Item Pekerjaan</Text>
-            {workItems.map((item: any, i: number) => (
+            {project.workItems?.map((item: any, i: number) => (
               <View key={i} style={styles.itemRow}>
                 <View>
                   <Text style={styles.itemName}>{item.name}</Text>
@@ -142,21 +153,9 @@ export default function ProjectDetailScreen() {
             ))}
           </>
         ) : (
-          <>
-             {/* Documents List */}
-             {uploadedDocs.length === 0 && <Text style={{ textAlign: 'center', color: '#94A3B8', marginTop: 20 }}>Tidak ada dokumen diupload.</Text>}
-             
-             {uploadedDocs.map((doc, i) => (
-               <TouchableOpacity key={i} style={styles.docCard}>
-                 <FileText color="#3B82F6" size={24} />
-                 <View style={{ flex: 1, marginLeft: 12 }}>
-                   <Text style={styles.docTitle}>{doc.title}</Text>
-                   <Text style={styles.docName}>{doc.file?.name || 'File'}</Text>
-                 </View>
-                 <Download color="#64748B" size={20} />
-               </TouchableOpacity>
-             ))}
-          </>
+          <View>
+             <Text style={{ textAlign: 'center', color: '#94A3B8', marginTop: 20 }}>Fitur Dokumen (Mockup)</Text>
+          </View>
         )}
 
       </ScrollView>
@@ -180,16 +179,13 @@ const styles = StyleSheet.create({
 
   progressCard: { backgroundColor: '#312e59', padding: 20, borderRadius: 20, marginBottom: 20, shadowColor: '#312e59', shadowOpacity: 0.3, shadowRadius: 8, elevation: 5 },
   
-  actionBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#10B981', padding: 16, borderRadius: 12, marginBottom: 24, gap: 8 },
-  actionBtnText: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
+  gridAction: { flexDirection: 'row', gap: 12, marginBottom: 24 },
+  actionBtn: { alignItems: 'center', justifyContent: 'center', padding: 16, borderRadius: 16, gap: 8 },
+  actionBtnText: { color: '#fff', fontWeight: 'bold', fontSize: 12 },
 
   sectionTitle: { fontSize: 16, fontWeight: 'bold', color: '#1E293B', marginBottom: 12 },
   itemRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, backgroundColor: '#fff', borderRadius: 12, marginBottom: 10 },
   itemName: { fontSize: 14, fontWeight: '600', color: '#334155' },
   itemTarget: { fontSize: 12, color: '#94A3B8' },
   itemVal: { fontSize: 16, fontWeight: 'bold', color: '#312e59' },
-
-  docCard: { flexDirection: 'row', alignItems: 'center', padding: 16, backgroundColor: '#fff', borderRadius: 12, marginBottom: 10 },
-  docTitle: { fontSize: 14, fontWeight: 'bold', color: '#334155' },
-  docName: { fontSize: 12, color: '#64748B' },
 });
