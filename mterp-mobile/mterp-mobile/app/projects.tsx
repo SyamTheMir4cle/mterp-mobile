@@ -111,8 +111,8 @@ export default function ProjectsScreen() {
         style={styles.card} 
         activeOpacity={0.9}
         onPress={() => {
-          // Jika Supervisor, klik card langsung buka update modal
-          if (['supervisor', 'admin_project'].includes(userRole)) openUpdateModal(item);
+          // Navigate to Detail Screen
+          router.push({ pathname: '/project-detail', params: { project: JSON.stringify(item) } } as any);
         }}
       >
         <View style={styles.cardHeader}>
@@ -211,41 +211,10 @@ export default function ProjectsScreen() {
 
       {/* FAB ADD (HANYA OWNER) */}
       {userRole === 'owner' && (
-        <TouchableOpacity style={styles.fab} onPress={() => setModalVisible(true)}>
+        <TouchableOpacity style={styles.fab} onPress={() => router.push('/add-project' as any)}>
           <Plus color="white" size={28} />
         </TouchableOpacity>
       )}
-
-      {/* MODAL 1: TAMBAH PROYEK */}
-      <Modal visible={modalVisible} transparent animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Proyek Baru</Text>
-              <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <X color="#94A3B8" size={24} />
-              </TouchableOpacity>
-            </View>
-            
-            <View style={styles.formGroup}>
-              <Text style={styles.label}>Nama Proyek</Text>
-              <TextInput style={styles.input} placeholder="Contoh: Apartemen Sky Tower" value={newProject.nama} onChangeText={(t) => setNewProject({...newProject, nama: t})} />
-            </View>
-            <View style={styles.formGroup}>
-              <Text style={styles.label}>Lokasi</Text>
-              <TextInput style={styles.input} placeholder="Contoh: Jakarta Selatan" value={newProject.lokasi} onChangeText={(t) => setNewProject({...newProject, lokasi: t})} />
-            </View>
-            <View style={styles.formGroup}>
-              <Text style={styles.label}>Estimasi Budget (Opsional)</Text>
-              <TextInput style={styles.input} placeholder="Rp 0" keyboardType="numeric" value={newProject.budget} onChangeText={(t) => setNewProject({...newProject, budget: t})} />
-            </View>
-
-            <TouchableOpacity style={styles.saveBtn} onPress={handleAddProject}>
-              <Text style={styles.saveBtnText}>Simpan Proyek</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
 
       {/* MODAL 2: UPDATE PROGRES */}
       <Modal visible={progressModal} transparent animationType="fade">

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { HardHat, ArrowRight } from 'lucide-react-native';
+import { HardHat, ArrowRight, Eye, EyeOff } from 'lucide-react-native';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../src/api';
@@ -9,9 +9,12 @@ import api from '../src/api';
 const { width } = Dimensions.get('window');
 
 export default function LoginScreen() {
-  const [username, setUsername] = useState('admin');
-  const [password, setPassword] = useState('admin123');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  
+  // State for password visibility
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
     if (!username || !password) return Alert.alert('Error', 'Isi username dan password');
@@ -54,15 +57,28 @@ export default function LoginScreen() {
               autoCapitalize="none"
             />
           </View>
+
           <View style={styles.inputGroup}>
             <Text style={styles.label}>PASSWORD</Text>
-            <TextInput 
-              style={styles.input} 
-              value={password} 
-              onChangeText={setPassword} 
-              placeholder="Masukan password"
-              secureTextEntry
-            />
+            <View style={styles.passwordContainer}>
+              <TextInput 
+                style={[styles.input, { paddingRight: 50 }]} // Add padding for icon space
+                value={password} 
+                onChangeText={setPassword} 
+                placeholder="Masukan password"
+                secureTextEntry={!showPassword} // Toggle based on state
+              />
+              <TouchableOpacity 
+                onPress={() => setShowPassword(!showPassword)}
+                style={styles.eyeIcon}
+              >
+                {showPassword ? (
+                  <EyeOff color="#94A3B8" size={24} />
+                ) : (
+                  <Eye color="#94A3B8" size={24} />
+                )}
+              </TouchableOpacity>
+            </View>
           </View>
 
           <TouchableOpacity onPress={handleLogin} disabled={loading}>
@@ -88,7 +104,7 @@ export default function LoginScreen() {
         </View>
       </View>
       
-      <Text style={styles.version}>v2.4.0 Build 2024</Text>
+      <Text style={styles.version}>v0.0.1 Build 2025</Text>
     </View>
   );
 }
@@ -111,9 +127,18 @@ const styles = StyleSheet.create({
   form: { gap: 20 },
   inputGroup: { gap: 8 },
   label: { fontSize: 12, fontWeight: 'bold', color: '#94A3B8', letterSpacing: 1 },
+  // Password Container Helper
+  passwordContainer: {
+    justifyContent: 'center',
+  },
   input: {
     backgroundColor: '#fff', borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 16,
     padding: 18, fontSize: 16, fontWeight: '600', color: '#334155',
+  },
+  // Icon Styling
+  eyeIcon: {
+    position: 'absolute',
+    right: 18,
   },
   btn: {
     flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10,
