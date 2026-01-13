@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Modal, ActivityIndicator, ScrollView, RefreshControl } from 'react-native';
-import { ChevronLeft, Plus, MapPin, TrendingUp, Calendar, CheckCircle2, MoreVertical, X, Briefcase, BarChart3, AlertCircle } from 'lucide-react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Modal, ActivityIndicator, ScrollView, RefreshControl, Alert } from 'react-native';
+import { ChevronLeft, Plus, MapPin, TrendingUp, Calendar, CheckCircle2, MoreVertical, X, Briefcase, BarChart3, AlertCircle, Trash2 } from 'lucide-react-native';
+
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -98,6 +99,29 @@ export default function ProjectsScreen() {
     }
   };
 
+  const handleDelete = (project: any) => {
+    Alert.alert(
+      "Hapus Proyek?",
+      `Anda yakin ingin menghapus proyek "${project.nama}"? Data yang dihapus tidak bisa dikembalikan.`,
+      [
+        { text: "Batal", style: "cancel" },
+        { 
+          text: "Hapus", 
+          style: "destructive", 
+          onPress: async () => {
+            try {
+              await api.delete(`/projects/${project._id}`);
+              setAlert({ visible: true, type: 'success', title: 'Terhapus', message: 'Proyek berhasil dihapus.' });
+              fetchProjects(); // Refresh list
+            } catch (error: any) {
+              setAlert({ visible: true, type: 'error', title: 'Gagal', message: error.response?.data?.msg || 'Gagal menghapus proyek' });
+            }
+          }
+        }
+      ]
+    );
+  };
+
   // --- RENDER ITEM ---
   const renderProject = ({ item }: { item: any }) => {
     // Hitung warna status
@@ -126,9 +150,14 @@ export default function ProjectsScreen() {
               <Text style={styles.projLoc}>{item.lokasi}</Text>
             </View>
           </View>
-          <TouchableOpacity>
-            <MoreVertical size={20} color="#94A3B8" />
-          </TouchableOpacity>
+          {/* Tombol Delete (Hanya Owner) atau Titik Tiga (User Lain) */}
+          {userRole === 'owner' ? (
+            <TouchableOpacity onPress={() => handleDelete(item)} style={{ padding: 4 }}>
+              <Trash2 size={20} color="#EF4444" />
+            </TouchableOpacity>
+          ) : (
+            <View style={{ width: 20 }} /> // Placeholder kosong biar rapi
+          )}
         </View>
 
         {/* Progress Bar Section */}

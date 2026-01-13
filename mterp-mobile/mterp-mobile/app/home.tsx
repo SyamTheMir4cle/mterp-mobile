@@ -119,7 +119,7 @@ export default function HomeScreen() {
              <TouchableOpacity><Text style={styles.seeAll}>View All</Text></TouchableOpacity>
           </View>
 
-          <View style={styles.notifCard}>
+          {/* <View style={styles.notifCard}>
              <View style={styles.notifLine} />
              <View style={styles.notifIcon}>
                 <AlertCircle size={20} color="#D97706" />
@@ -129,7 +129,7 @@ export default function HomeScreen() {
                 <Text style={styles.notifBody}>Stop all crane operations immediately until further notice.</Text>
                 <Text style={styles.notifTime}>10 mins ago</Text>
              </View>
-          </View>
+          </View> */}
         </View>
 
       </ScrollView>
