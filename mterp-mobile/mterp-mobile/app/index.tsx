@@ -1,20 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { HardHat, ArrowRight, Eye, EyeOff } from 'lucide-react-native';
+import { HardHat, ArrowRight, User } from 'lucide-react-native';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../src/api';
-
-const { width } = Dimensions.get('window');
+import { Input, Button } from '../components/shared';
 
 export default function LoginScreen() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  
-  // State for password visibility
-  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
     if (!username || !password) return Alert.alert('Error', 'Isi username dan password');
@@ -47,60 +43,45 @@ export default function LoginScreen() {
         </View>
 
         <View style={styles.form}>
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>USERNAME</Text>
-            <TextInput 
-              style={styles.input} 
-              value={username} 
-              onChangeText={setUsername} 
-              placeholder="Masukan username"
-              autoCapitalize="none"
-            />
-          </View>
+          <Input
+            label="USERNAME"
+            placeholder="Masukan username"
+            value={username}
+            onChangeText={setUsername}
+            type="text"
+            icon={User}
+            style={{ marginBottom: 0 }}
+          />
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>PASSWORD</Text>
-            <View style={styles.passwordContainer}>
-              <TextInput 
-                style={[styles.input, { paddingRight: 50 }]} // Add padding for icon space
-                value={password} 
-                onChangeText={setPassword} 
-                placeholder="Masukan password"
-                secureTextEntry={!showPassword} // Toggle based on state
-              />
-              <TouchableOpacity 
-                onPress={() => setShowPassword(!showPassword)}
-                style={styles.eyeIcon}
-              >
-                {showPassword ? (
-                  <EyeOff color="#94A3B8" size={24} />
-                ) : (
-                  <Eye color="#94A3B8" size={24} />
-                )}
-              </TouchableOpacity>
-            </View>
-          </View>
+          <Input
+            label="PASSWORD"
+            placeholder="Masukan password"
+            value={password}
+            onChangeText={setPassword}
+            type="password"
+            style={{ marginBottom: 0 }}
+          />
 
-          <TouchableOpacity onPress={handleLogin} disabled={loading}>
-            <LinearGradient 
-              colors={['#312e59', '#514d8a']} 
-              start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
-              style={styles.btn}
-            >
-              {loading ? <ActivityIndicator color="#fff" /> : (
-                <>
-                  <Text style={styles.btnText}>Sign In</Text>
-                  <ArrowRight color="#fff" size={20} />
-                </>
-              )}
-            </LinearGradient>
-          </TouchableOpacity>
+          <Button
+            title="Sign In"
+            onPress={handleLogin}
+            variant="primary"
+            size="large"
+            loading={loading}
+            icon={ArrowRight}
+            iconPosition="right"
+            fullWidth
+            style={{ marginTop: 10 }}
+          />
 
-          <TouchableOpacity onPress={() => router.push('/register' as any)} style={{ marginTop: 20 }}>
-             <Text style={{ textAlign: 'center', color: '#64748B', fontWeight: '600' }}>
-               Belum punya akses? <Text style={{ color: '#312e59', fontWeight: 'bold' }}>Daftar Akun</Text>
-             </Text>
-          </TouchableOpacity>
+          <Button
+            title="Belum punya akses? Daftar Akun"
+            onPress={() => router.push('/register' as any)}
+            variant="outline"
+            size="medium"
+            fullWidth
+            style={{ marginTop: 16, borderWidth: 0, backgroundColor: 'transparent' }}
+          />
         </View>
       </View>
       
@@ -108,6 +89,7 @@ export default function LoginScreen() {
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center' },
@@ -125,26 +107,5 @@ const styles = StyleSheet.create({
   title: { fontSize: 42, fontWeight: '900', color: '#312e59', letterSpacing: -1 },
   subtitle: { fontSize: 18, color: '#94A3B8', fontWeight: '500' },
   form: { gap: 20 },
-  inputGroup: { gap: 8 },
-  label: { fontSize: 12, fontWeight: 'bold', color: '#94A3B8', letterSpacing: 1 },
-  // Password Container Helper
-  passwordContainer: {
-    justifyContent: 'center',
-  },
-  input: {
-    backgroundColor: '#fff', borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 16,
-    padding: 18, fontSize: 16, fontWeight: '600', color: '#334155',
-  },
-  // Icon Styling
-  eyeIcon: {
-    position: 'absolute',
-    right: 18,
-  },
-  btn: {
-    flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10,
-    padding: 18, borderRadius: 16, marginTop: 10,
-    shadowColor: '#312e59', shadowOpacity: 0.3, shadowRadius: 10, elevation: 5,
-  },
-  btnText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
   version: { position: 'absolute', bottom: 30, width: '100%', textAlign: 'center', color: '#CBD5E1', fontWeight: '600' }
 });

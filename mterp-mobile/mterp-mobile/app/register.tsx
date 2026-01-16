@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, ScrollView } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Mail, Lock, User, Briefcase, ArrowRight, CheckCircle2 } from 'lucide-react-native';
+import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
+import { CheckCircle2 } from 'lucide-react-native';
 import { router } from 'expo-router';
 import api from '../src/api';
+import { Input, Button, Chip } from '../components/shared';
 
 export default function RegisterScreen() {
   // Step 1: Input Data, Step 2: Input OTP
@@ -60,20 +60,23 @@ export default function RegisterScreen() {
           <Text style={styles.title}>Verifikasi Email</Text>
           <Text style={styles.subtitle}>Masukkan 6 digit kode yang dikirim ke {formData.email}</Text>
           
-          <TextInput 
-            style={[styles.input, {textAlign: 'center', fontSize: 24, letterSpacing: 8}]} 
+          <Input
             placeholder="000000"
-            keyboardType="number-pad"
-            maxLength={6}
+            type="number"
             value={otp}
             onChangeText={setOtp}
+            maxLength={6}
+            style={{ textAlign: 'center', fontSize: 24, letterSpacing: 8 }}
           />
 
-          <TouchableOpacity onPress={handleVerify} disabled={loading}>
-            <LinearGradient colors={['#312e59', '#514d8a']} style={styles.btn}>
-              {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnText}>Verifikasi & Aktifkan</Text>}
-            </LinearGradient>
-          </TouchableOpacity>
+          <Button
+            title="Verifikasi & Aktifkan"
+            onPress={handleVerify}
+            loading={loading}
+            variant="primary"
+            size="large"
+            fullWidth
+          />
         </View>
       </View>
     );
@@ -88,86 +91,66 @@ export default function RegisterScreen() {
           <Text style={styles.subtitle}>Daftar untuk akses sistem ERP</Text>
 
           <View style={styles.form}>
-            {/* Full Name */}
-            <View style={styles.inputGroup}>
-              <User size={20} color="#94A3B8" />
-              <TextInput 
-                style={styles.inputField} 
-                placeholder="Nama Lengkap" 
-                value={formData.fullName}
-                onChangeText={(t) => setFormData({...formData, fullName: t})}
-              />
-            </View>
+            <Input
+              placeholder="Nama Lengkap"
+              value={formData.fullName}
+              onChangeText={(t) => setFormData({...formData, fullName: t})}
+            />
 
-            {/* Role Selection (Sederhana) */}
-            <View style={styles.roleContainer}>
+            {/* Role Selection */}
+            <View>
                <Text style={styles.label}>DAFTAR SEBAGAI:</Text>
                <View style={styles.roleRow}>
                   {['supervisor', 'asset_admin', 'director'].map((r) => (
-                    <TouchableOpacity 
+                    <Chip
                       key={r}
+                      label={r === 'asset_admin' ? 'Admin Aset' : r.toUpperCase()}
                       onPress={() => setFormData({...formData, role: r})}
-                      style={[styles.roleBadge, formData.role === r && styles.roleActive]}
-                    >
-                      <Text style={[styles.roleText, formData.role === r && styles.roleTextActive]}>
-                        {r === 'asset_admin' ? 'Admin Aset' : r.toUpperCase()}
-                      </Text>
-                    </TouchableOpacity>
+                      selected={formData.role === r}
+                      variant="outline"
+                      size="medium"
+                    />
                   ))}
                </View>
             </View>
 
-            {/* Email */}
-            <View style={styles.inputGroup}>
-              <Mail size={20} color="#94A3B8" />
-              <TextInput 
-                style={styles.inputField} 
-                placeholder="Email Perusahaan" 
-                keyboardType="email-address"
-                autoCapitalize="none"
-                value={formData.email}
-                onChangeText={(t) => setFormData({...formData, email: t})}
-              />
-            </View>
+            <Input
+              placeholder="Email Perusahaan"
+              type="email"
+              value={formData.email}
+              onChangeText={(t) => setFormData({...formData, email: t})}
+            />
 
-            {/* Username */}
-            <View style={styles.inputGroup}>
-              <User size={20} color="#94A3B8" />
-              <TextInput 
-                style={styles.inputField} 
-                placeholder="Username Login" 
-                autoCapitalize="none"
-                value={formData.username}
-                onChangeText={(t) => setFormData({...formData, username: t})}
-              />
-            </View>
+            <Input
+              placeholder="Username Login"
+              value={formData.username}
+              onChangeText={(t) => setFormData({...formData, username: t})}
+            />
 
-            {/* Password */}
-            <View style={styles.inputGroup}>
-              <Lock size={20} color="#94A3B8" />
-              <TextInput 
-                style={styles.inputField} 
-                placeholder="Password" 
-                secureTextEntry
-                value={formData.password}
-                onChangeText={(t) => setFormData({...formData, password: t})}
-              />
-            </View>
+            <Input
+              placeholder="Password"
+              type="password"
+              value={formData.password}
+              onChangeText={(t) => setFormData({...formData, password: t})}
+            />
 
-            <TouchableOpacity onPress={handleRegister} disabled={loading}>
-              <LinearGradient colors={['#312e59', '#514d8a']} style={styles.btn}>
-                {loading ? <ActivityIndicator color="#fff" /> : (
-                  <>
-                    <Text style={styles.btnText}>Mulai Verifikasi E-mail</Text>
-                    <ArrowRight color="#fff" size={20} />
-                  </>
-                )}
-              </LinearGradient>
-            </TouchableOpacity>
+            <Button
+              title="Mulai Verifikasi E-mail"
+              onPress={handleRegister}
+              loading={loading}
+              variant="primary"
+              size="large"
+              fullWidth
+            />
 
-            <TouchableOpacity onPress={() => router.back()} style={{marginTop: 20}}>
-               <Text style={{textAlign:'center', color:'#64748B'}}>Sudah punya akun? Login</Text>
-            </TouchableOpacity>
+            <Button
+              title="Sudah punya akun? Login"
+              onPress={() => router.back()}
+              variant="outline"
+              size="medium"
+              fullWidth
+              style={{ marginTop: 16, borderWidth: 0, backgroundColor: 'transparent' }}
+            />
           </View>
         </View>
       </View>
@@ -181,24 +164,7 @@ const styles = StyleSheet.create({
   title: { fontSize: 28, fontWeight: 'bold', color: '#312e59', marginBottom: 5 },
   subtitle: { fontSize: 14, color: '#64748B', marginBottom: 30 },
   form: { gap: 15 },
-  inputGroup: { 
-    flexDirection: 'row', alignItems: 'center', gap: 10, 
-    borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 12, paddingHorizontal: 15, paddingVertical: 12 
-  },
-  inputField: { flex: 1, fontSize: 16, color: '#334155' },
-  input: { borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 12, padding: 15, fontSize: 16, color: '#334155' },
   
   label: { fontSize: 10, fontWeight: 'bold', color: '#94A3B8', marginBottom: 8, letterSpacing: 1 },
-  roleContainer: { marginVertical: 5 },
-  roleRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  roleBadge: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, backgroundColor: '#F1F5F9' },
-  roleActive: { backgroundColor: '#312e59' },
-  roleText: { fontSize: 12, fontWeight: 'bold', color: '#64748B' },
-  roleTextActive: { color: '#fff' },
-
-  btn: { 
-    flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10, 
-    padding: 18, borderRadius: 16, marginTop: 10, shadowColor: '#312e59', shadowOpacity: 0.3, shadowRadius: 10, elevation: 5 
-  },
-  btnText: { color: '#fff', fontSize: 16, fontWeight: 'bold' }
+  roleRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 },
 });

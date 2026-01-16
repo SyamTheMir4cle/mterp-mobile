@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
-import { router } from 'expo-router';
-import { ChevronLeft, UploadCloud, Plus, Trash2, Save, Calendar } from 'lucide-react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { UploadCloud, Plus, Trash2, Save } from 'lucide-react-native';
 import * as DocumentPicker from 'expo-document-picker';
+import { router } from 'expo-router';
 import api from '../src/api';
+import { Header, Input, Section, Button, EmptyState } from '../components/shared';
 
 export default function AddProjectScreen() {
   const [loading, setLoading] = useState(false);
@@ -136,99 +137,75 @@ export default function AddProjectScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <ChevronLeft color="#1E293B" size={24} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Buat Proyek Baru</Text>
-      </View>
+      <Header title="Buat Proyek Baru" />
 
       <ScrollView style={styles.content} contentContainerStyle={{ paddingBottom: 100 }}>
         
         {/* Section 1: Info Dasar & Jadwal */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>1. Informasi & Jadwal</Text>
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Nama Proyek</Text>
-            <TextInput 
-              style={styles.input} 
-              placeholder="Contoh: Pembangunan Ruko..." 
-              value={form.nama}
-              onChangeText={t => setForm({ ...form, nama: t })}
-            />
-          </View>
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Lokasi</Text>
-            <TextInput 
-              style={styles.input} 
-              placeholder="Jakarta Selatan" 
-              value={form.lokasi}
-              onChangeText={t => setForm({ ...form, lokasi: t })}
-            />
-          </View>
+        <Section title="1. Informasi & Jadwal">
+          <Input
+            label="Nama Proyek"
+            placeholder="Contoh: Pembangunan Ruko..."
+            value={form.nama}
+            onChangeText={t => setForm({ ...form, nama: t })}
+          />
+          
+          <Input
+            label="Lokasi"
+            placeholder="Jakarta Selatan"
+            value={form.lokasi}
+            onChangeText={t => setForm({ ...form, lokasi: t })}
+          />
           
           {/* Row Tanggal Proyek */}
           <View style={{ flexDirection: 'row', gap: 12 }}>
-            <View style={[styles.inputGroup, { flex: 1 }]}>
-              <Text style={styles.label}>Tgl Mulai (YYYY-MM-DD)</Text>
-              <TextInput 
-                style={styles.input} 
-                placeholder="2024-01-01" 
-                value={form.startDate}
-                onChangeText={t => setForm({ ...form, startDate: t })}
-              />
-            </View>
-            <View style={[styles.inputGroup, { flex: 1 }]}>
-              <Text style={styles.label}>Tgl Selesai</Text>
-              <TextInput 
-                style={styles.input} 
-                placeholder="2024-12-31" 
-                value={form.endDate}
-                onChangeText={t => setForm({ ...form, endDate: t })}
-              />
-            </View>
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Estimasi Budget</Text>
-            <TextInput 
-              style={styles.input} 
-              placeholder="Rp 0" 
-              keyboardType="numeric"
-              value={form.budget}
-              onChangeText={t => setForm({ ...form, budget: t })}
+            <Input
+              label="Tgl Mulai (YYYY-MM-DD)"
+              placeholder="2024-01-01"
+              value={form.startDate}
+              onChangeText={t => setForm({ ...form, startDate: t })}
+              style={{ flex: 1, marginBottom: 0 }}
+            />
+            <Input
+              label="Tgl Selesai"
+              placeholder="2024-12-31"
+              value={form.endDate}
+              onChangeText={t => setForm({ ...form, endDate: t })}
+              style={{ flex: 1, marginBottom: 0 }}
             />
           </View>
-        </View>
+
+          <Input
+            label="Estimasi Budget"
+            placeholder="Rp 0"
+            type="number"
+            value={form.budget}
+            onChangeText={t => setForm({ ...form, budget: t })}
+          />
+        </Section>
 
         {/* Section 2: Dokumen */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>2. Dokumen Referensi</Text>
-          <Text style={styles.sectionSub}>Upload file pendukung (PDF/Img)</Text>
-          
+        <Section title="2. Dokumen Referensi" subtitle="Upload file pendukung (PDF/Img)">
           {renderDocPicker('Dokumen Perencanaan', 'perencanaan')}
           {renderDocPicker('RAB (Rencana Anggaran)', 'rab')}
           {renderDocPicker('Gambar Kerja', 'gambarKerja')}
           {renderDocPicker('Rencana Material', 'rencanaMaterial')}
           {renderDocPicker('Rencana Alat', 'rencanaAlat')}
-        </View>
+        </Section>
 
         {/* Section 3: Item Pekerjaan (Schedule) */}
-        <View style={styles.section}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-            <Text style={styles.sectionTitle}>3. Jadwal Item Pekerjaan</Text>
-            <TouchableOpacity style={styles.addBtn} onPress={addWorkItem}>
-              <Plus size={16} color="#fff" />
-              <Text style={{ color: '#fff', fontSize: 12, fontWeight: 'bold', marginLeft: 4 }}>Tambah</Text>
-            </TouchableOpacity>
-          </View>
-          <Text style={styles.sectionSub}>Jadwal item digunakan untuk kalkulasi Kurva S.</Text>
-          
+        <Section 
+          title="3. Jadwal Item Pekerjaan" 
+          subtitle="Jadwal item digunakan untuk kalkulasi Kurva S."
+          actionLabel="Tambah"
+          onAction={addWorkItem}
+          actionIcon={Plus}
+        >
           {workItems.length === 0 && (
-            <View style={styles.emptyItem}>
-              <Text style={{ color: '#94A3B8' }}>Belum ada item pekerjaan</Text>
-            </View>
+            <EmptyState
+              title="Belum ada item pekerjaan"
+              description="Klik tombol Tambah untuk menambahkan item pekerjaan"
+            />
           )}
 
           {workItems.map((item, index) => (
@@ -239,59 +216,51 @@ export default function AddProjectScreen() {
                   <Trash2 size={18} color="#EF4444" />
                 </TouchableOpacity>
               </View>
-              
-              <View style={{ gap: 8 }}>
-                <TextInput 
-                  style={styles.itemInput} 
-                  placeholder="Nama Pekerjaan (misal: Pondasi)" 
+                            <View style={{ gap: 0 }}>
+                <Input
+                  placeholder="Nama Pekerjaan (misal: Pondasi)"
                   value={item.name}
                   onChangeText={t => updateWorkItem(item.id, 'name', t)}
                 />
-                <TextInput 
-                  style={styles.itemInput} 
-                  placeholder="Target (misal: 100 m3 / 100%)" 
+                <Input
+                  placeholder="Target (misal: 100 m3 / 100%)"
                   value={item.target}
                   onChangeText={t => updateWorkItem(item.id, 'target', t)}
                 />
                 
                 {/* Tanggal Item */}
                 <View style={{ flexDirection: 'row', gap: 8 }}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.tinyLabel}>Mulai</Text>
-                    <TextInput 
-                      style={styles.dateInput} 
-                      placeholder="YYYY-MM-DD" 
-                      value={item.startDate}
-                      onChangeText={t => updateWorkItem(item.id, 'startDate', t)}
-                    />
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.tinyLabel}>Selesai</Text>
-                    <TextInput 
-                      style={styles.dateInput} 
-                      placeholder="YYYY-MM-DD" 
-                      value={item.endDate}
-                      onChangeText={t => updateWorkItem(item.id, 'endDate', t)}
-                    />
-                  </View>
+                  <Input
+                    label="Mulai"
+                    placeholder="YYYY-MM-DD"
+                    value={item.startDate}
+                    onChangeText={t => updateWorkItem(item.id, 'startDate', t)}
+                    style={{ flex: 1, marginBottom: 0 }}
+                  />
+                  <Input
+                    label="Selesai"
+                    placeholder="YYYY-MM-DD"
+                    value={item.endDate}
+                    onChangeText={t => updateWorkItem(item.id, 'endDate', t)}
+                    style={{ flex: 1, marginBottom: 0 }}
+                  />
                 </View>
               </View>
             </View>
           ))}
-        </View>
+        </Section>
 
-        <TouchableOpacity 
-          style={[styles.saveBtn, loading && { opacity: 0.7 }]} 
+        <Button
+          title="SIMPAN PROYEK"
           onPress={handleSubmit}
-          disabled={loading}
-        >
-          {loading ? <ActivityIndicator color="#fff" /> : (
-            <>
-              <Save size={20} color="#fff" style={{ marginRight: 8 }} />
-              <Text style={styles.saveBtnText}>SIMPAN PROYEK</Text>
-            </>
-          )}
-        </TouchableOpacity>
+          variant="primary"
+          size="large"
+          icon={Save}
+          iconPosition="left"
+          loading={loading}
+          fullWidth
+          style={{ marginTop: 10, marginBottom: 40 }}
+        />
 
       </ScrollView>
     </View>
@@ -300,34 +269,14 @@ export default function AddProjectScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8F9FA' },
-  header: { flexDirection: 'row', alignItems: 'center', padding: 24, paddingTop: 60, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#F1F5F9' },
-  backBtn: { marginRight: 16, padding: 8, borderRadius: 50, backgroundColor: '#F1F5F9' },
-  headerTitle: { fontSize: 20, fontWeight: 'bold', color: '#1E293B' },
   content: { padding: 24 },
   
-  section: { backgroundColor: '#fff', padding: 16, borderRadius: 16, marginBottom: 20, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 5, elevation: 2 },
-  sectionTitle: { fontSize: 16, fontWeight: 'bold', color: '#1E293B', marginBottom: 4 },
-  sectionSub: { fontSize: 12, color: '#64748B', marginBottom: 16 },
-
-  inputGroup: { marginBottom: 12 },
-  label: { fontSize: 12, fontWeight: '600', color: '#64748B', marginBottom: 6 },
-  tinyLabel: { fontSize: 10, color: '#94A3B8', marginBottom: 2 },
-  input: { borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 8, padding: 12, fontSize: 14, color: '#1E293B', backgroundColor: '#F8FAFC' },
-
   docRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#F1F5F9' },
   docLabel: { fontSize: 14, fontWeight: '500', color: '#334155' },
   fileName: { fontSize: 12, color: '#3B82F6', marginTop: 2 },
   uploadBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#DBEAFE', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6, gap: 4 },
   uploadText: { fontSize: 12, color: '#312e59', fontWeight: 'bold' },
 
-  addBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#10B981', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 6 },
-  emptyItem: { padding: 20, alignItems: 'center', backgroundColor: '#F8FAFC', borderRadius: 8, borderStyle: 'dashed', borderWidth: 1, borderColor: '#CBD5E1' },
-  
   itemRow: { marginBottom: 16, borderBottomWidth: 1, borderBottomColor: '#F1F5F9', paddingBottom: 16 },
   itemNum: { fontSize: 14, fontWeight: 'bold', color: '#312e59' },
-  itemInput: { borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 8, padding: 10, fontSize: 13, backgroundColor: '#fff' },
-  dateInput: { borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 8, padding: 8, fontSize: 12, backgroundColor: '#F8FAFC', color: '#334155' },
-
-  saveBtn: { backgroundColor: '#312e59', padding: 16, borderRadius: 14, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10, marginBottom: 40, shadowColor: '#312e59', shadowOpacity: 0.3, shadowRadius: 10, elevation: 5 },
-  saveBtnText: { color: '#fff', fontSize: 16, fontWeight: 'bold' }
 });

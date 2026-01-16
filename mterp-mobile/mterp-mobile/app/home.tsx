@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LogOut, Wrench, ClipboardList, Clock, Truck, CheckSquare, AlertCircle, ChevronLeft, ProjectorIcon, HardHatIcon } from 'lucide-react-native';
+import { Badge, IconButton } from '../components/shared';
 
 export default function HomeScreen() {
   const [user, setUser] = useState<any>(null);
@@ -29,13 +30,21 @@ export default function HomeScreen() {
             <View>
               <Text style={styles.greeting}>Good Morning,</Text>
               <Text style={styles.username}>{user?.fullName || 'User'}</Text>
-              <View style={styles.roleTag}>
-                <Text style={styles.roleText}>{user?.role || 'STAFF'}</Text>
-              </View>
+              <Badge 
+                label={user?.role || 'STAFF'} 
+                variant="neutral" 
+                size="small"
+                style={{ marginTop: 6, backgroundColor: 'rgba(255,255,255,0.2)', borderColor: 'rgba(255,255,255,0.3)' }}
+              />
             </View>
-            <TouchableOpacity onPress={handleLogout} style={styles.logoutBtn}>
-              <LogOut size={20} color="white" />
-            </TouchableOpacity>
+            <IconButton
+              icon={LogOut}
+              onPress={handleLogout}
+              size={20}
+              color="white"
+              backgroundColor="rgba(255,255,255,0.15)"
+              style={{ borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' }}
+            />
           </View>
           
           {/* Hiasan Background Header */}

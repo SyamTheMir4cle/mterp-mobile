@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Image, Alert, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
-import { ChevronLeft, Camera, Upload, Users, Wrench, CheckSquare, Save } from 'lucide-react-native';
+import { Camera, Upload, Users, Wrench, CheckSquare, Save } from 'lucide-react-native';
 import * as ImagePicker from 'expo-image-picker';
 import api from '../src/api';
+import { Header, Section, Input, Button } from '../components/shared';
 
 export default function ProjectUpdateScreen() {
   const params = useLocalSearchParams();
@@ -101,12 +102,7 @@ export default function ProjectUpdateScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <ChevronLeft color="#1E293B" size={24} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Laporan Harian</Text>
-      </View>
+      <Header title="Laporan Harian" />
 
       <ScrollView contentContainerStyle={{ padding: 24, paddingBottom: 100 }}>
         
@@ -117,8 +113,7 @@ export default function ProjectUpdateScreen() {
         </View>
 
         {/* 1. FOTO KEGIATAN */}
-        <View style={styles.section}>
-          <Text style={styles.secTitle}>1. Foto Kegiatan (Wajib)</Text>
+        <Section title="1. Foto Kegiatan (Wajib)">
           <TouchableOpacity style={styles.uploadBox} onPress={pickImage}>
             {photo ? (
               <Image source={{ uri: photo.uri }} style={{ width: '100%', height: 200, borderRadius: 8 }} />
@@ -129,31 +124,30 @@ export default function ProjectUpdateScreen() {
               </View>
             )}
           </TouchableOpacity>
-        </View>
+        </Section>
 
         {/* 2. PROGRESS PEKERJAAN */}
-        <View style={styles.section}>
-          <Text style={styles.secTitle}>2. Progress Item Pekerjaan</Text>
+        <Section title="2. Progress Item Pekerjaan">
           {itemProgress.map((item: any, idx: number) => (
             <View key={idx} style={styles.itemRow}>
               <Text style={styles.itemLabel}>{item.name}</Text>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                <TextInput 
-                  style={styles.numInput} 
-                  placeholder="0" 
-                  keyboardType="numeric"
+                <Input
+                  placeholder="0"
+                  type="number"
                   value={item.todayUpdate}
                   onChangeText={(t) => {
                     const newItems = [...itemProgress];
                     newItems[idx].todayUpdate = t;
                     setItemProgress(newItems);
                   }}
+                  style={{ width: 60, marginBottom: 0 }}
                 />
                 <Text style={{ fontSize: 12, color: '#64748B' }}>% (Hari Ini)</Text>
               </View>
             </View>
           ))}
-        </View>
+        </Section>
 
         {/* 3. TENAGA KERJA */}
         <View style={styles.section}>
@@ -176,22 +170,26 @@ export default function ProjectUpdateScreen() {
         </View>
 
         {/* 4. MATERIAL & ALAT */}
-        <View style={styles.section}>
-          <Text style={styles.secTitle}>4. Material & Alat Terpakai</Text>
-          <TextInput 
-            style={[styles.input, { height: 80, textAlignVertical: 'top' }]}
-            multiline 
+        <Section title="4. Material & Alat Terpakai">
+          <Input
             placeholder="Tuliskan material dan alat yang digunakan hari ini..."
             value={resources}
             onChangeText={setResources}
+            multiline
+            numberOfLines={4}
           />
-        </View>
+        </Section>
 
-        <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit} disabled={loading}>
-          {loading ? <ActivityIndicator color="#fff" /> : (
-            <Text style={styles.submitText}>KIRIM LAPORAN</Text>
-          )}
-        </TouchableOpacity>
+        <Button
+          title="KIRIM LAPORAN"
+          onPress={handleSubmit}
+          variant="primary"
+          size="large"
+          icon={Save}
+          loading={loading}
+          fullWidth
+          style={{ marginTop: 10 }}
+        />
 
       </ScrollView>
     </View>
@@ -200,9 +198,6 @@ export default function ProjectUpdateScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8F9FA' },
-  header: { flexDirection: 'row', alignItems: 'center', padding: 24, paddingTop: 60, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#F1F5F9' },
-  backBtn: { marginRight: 16, padding: 8, borderRadius: 50, backgroundColor: '#F1F5F9' },
-  headerTitle: { fontSize: 18, fontWeight: 'bold', color: '#1E293B' },
   
   infoCard: { marginBottom: 20 },
   projName: { fontSize: 20, fontWeight: 'bold', color: '#1E293B' },
@@ -219,9 +214,4 @@ const styles = StyleSheet.create({
 
   workRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   workLabel: { fontSize: 14, color: '#475569' },
-
-  input: { backgroundColor: '#F8FAFC', padding: 12, borderRadius: 10, borderWidth: 1, borderColor: '#E2E8F0' },
-
-  submitBtn: { backgroundColor: '#312e59', padding: 16, borderRadius: 14, alignItems: 'center', marginTop: 10 },
-  submitText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
 });

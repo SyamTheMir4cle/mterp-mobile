@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Modal, ActivityIndicator, ScrollView, RefreshControl, Alert } from 'react-native';
-import { ChevronLeft, Plus, MapPin, TrendingUp, Calendar, CheckCircle2, MoreVertical, X, Briefcase, BarChart3, AlertCircle, Trash2 } from 'lucide-react-native';
+import { Plus, MapPin, TrendingUp, MoreVertical, X, Briefcase, BarChart3, Trash2 } from 'lucide-react-native';
 
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../src/api';
 import CustomAlert from '../components/CustomAlert';
+import { Header, Card, Badge, ProgressBar, IconButton, EmptyState, Input, Button } from '../components/shared';
 
 export default function ProjectsScreen() {
   const [projects, setProjects] = useState([]);
@@ -127,17 +128,22 @@ export default function ProjectsScreen() {
     // Hitung warna status
     let statusColor = '#3B82F6'; // Blue default
     let statusBg = '#DBEAFE';
-    if (item.progress === 100) { statusColor = '#10B981'; statusBg = '#D1FAE5'; } // Green
-    else if (item.status === 'Planning') { statusColor = '#F59E0B'; statusBg = '#FEF3C7'; } // Orange
+    let statusVariant: any = 'primary';
+    
+    if (item.progress === 100) { 
+      statusColor = '#10B981'; 
+      statusBg = '#D1FAE5'; 
+      statusVariant = 'success';
+    } else if (item.status === 'Planning') { 
+      statusColor = '#F59E0B'; 
+      statusBg = '#FEF3C7'; 
+      statusVariant = 'warning';
+    }
 
     return (
-      <TouchableOpacity 
-        style={styles.card} 
-        activeOpacity={0.9}
-        onPress={() => {
-          // Navigate to Detail Screen
-          router.push({ pathname: '/project-detail', params: { project: JSON.stringify(item) } } as any);
-        }}
+      <Card 
+        style={{ marginBottom: 16 }} 
+        onPress={() => router.push({ pathname: '/project-detail', params: { project: JSON.stringify(item) } } as any)}
       >
         <View style={styles.cardHeader}>
           <View style={[styles.iconBox, { backgroundColor: statusBg }]}>
@@ -150,40 +156,42 @@ export default function ProjectsScreen() {
               <Text style={styles.projLoc}>{item.lokasi}</Text>
             </View>
           </View>
-          {/* Tombol Delete (Hanya Owner) atau Titik Tiga (User Lain) */}
-          {userRole === 'owner' ? (
-            <TouchableOpacity onPress={() => handleDelete(item)} style={{ padding: 4 }}>
-              <Trash2 size={20} color="#EF4444" />
-            </TouchableOpacity>
-          ) : (
-            <View style={{ width: 20 }} /> // Placeholder kosong biar rapi
+          {/* Delete Button (Owner Only) */}
+          {userRole === 'owner' && (
+            <IconButton
+              icon={Trash2}
+              onPress={() => handleDelete(item)}
+              size={20}
+              color="#EF4444"
+              backgroundColor="#FEE2E2"
+              variant="ghost"
+            />
           )}
         </View>
 
-        {/* Progress Bar Section */}
-        <View style={styles.progressSection}>
-          <View style={styles.progressLabel}>
-            <Text style={styles.progressTitle}>Project Progress</Text>
-            <Text style={[styles.progressVal, { color: statusColor }]}>{item.progress}%</Text>
-          </View>
-          <View style={styles.progressBarBg}>
-            <View style={[styles.progressBarFill, { width: `${item.progress}%`, backgroundColor: statusColor }]} />
-          </View>
-        </View>
+        {/* Progress Bar */}
+        <ProgressBar
+          progress={item.progress}
+          label="Project Progress"
+          showLabel={true}
+          color={statusColor}
+          style={{ marginBottom: 16 }}
+        />
 
         <View style={styles.cardFooter}>
-          <View style={styles.footerItem}>
-            <Calendar size={14} color="#64748B" />
-            <Text style={styles.footerText}>{item.status || 'On Going'}</Text>
-          </View>
-          {/* Tombol Khusus Supervisor */}
+          <Badge 
+            label={item.status || 'On Going'} 
+            variant={statusVariant}
+            size="small"
+          />
+          {/* Update Button (Supervisor Only) */}
           {['supervisor', 'admin_project'].includes(userRole) && (
             <TouchableOpacity style={styles.updateBtn} onPress={() => openUpdateModal(item)}>
               <Text style={styles.updateBtnText}>Update</Text>
             </TouchableOpacity>
           )}
         </View>
-      </TouchableOpacity>
+      </Card>
     );
   };
 
@@ -192,15 +200,10 @@ export default function ProjectsScreen() {
       <CustomAlert visible={alert.visible} type={alert.type} title={alert.title} message={alert.message} onClose={() => setAlert({ ...alert, visible: false })} />
 
       {/* HEADER */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <ChevronLeft color="#1E293B" size={24} />
-        </TouchableOpacity>
-        <View>
-          <Text style={styles.headerTitle}>Daftar Proyek</Text>
-          <Text style={styles.headerSub}>{projects.length} Proyek Aktif</Text>
-        </View>
-      </View>
+      <Header 
+        title="Daftar Proyek" 
+        subtitle={`${projects.length} Proyek Aktif`}
+      />
 
       {/* DASHBOARD RINGKASAN (Untuk Direktur/Owner) */}
       {['director', 'owner'].includes(userRole) && (
@@ -230,10 +233,11 @@ export default function ProjectsScreen() {
           contentContainerStyle={{ padding: 24, paddingBottom: 100 }}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
           ListEmptyComponent={
-            <View style={styles.emptyState}>
-              <Briefcase size={48} color="#CBD5E1" />
-              <Text style={styles.emptyText}>Belum ada proyek terdaftar</Text>
-            </View>
+            <EmptyState
+              icon={Briefcase}
+              title="Belum ada proyek terdaftar"
+              description="Mulai dengan membuat proyek pertama Anda"
+            />
           }
         />
       )}
@@ -284,33 +288,19 @@ export default function ProjectsScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8F9FA' },
-  header: { flexDirection: 'row', alignItems: 'center', padding: 24, paddingTop: 60, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#F1F5F9' },
-  backBtn: { marginRight: 16, padding: 8, borderRadius: 50, backgroundColor: '#F1F5F9' },
-  headerTitle: { fontSize: 20, fontWeight: 'bold', color: '#1E293B' },
-  headerSub: { fontSize: 12, color: '#64748B' },
 
   summaryCard: { margin: 24, marginBottom: 0, padding: 20, borderRadius: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', shadowColor: '#312e59', shadowOpacity: 0.3, shadowRadius: 10, elevation: 5 },
   sumLabel: { color: 'rgba(255,255,255,0.8)', fontSize: 12, marginBottom: 4 },
   sumValue: { color: '#fff', fontSize: 32, fontWeight: 'bold' },
   chartIcon: { backgroundColor: 'rgba(255,255,255,0.1)', padding: 10, borderRadius: 12 },
 
-  card: { backgroundColor: '#fff', borderRadius: 20, padding: 16, marginBottom: 16, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 10, elevation: 3 },
   cardHeader: { flexDirection: 'row', gap: 12, marginBottom: 16 },
   iconBox: { width: 48, height: 48, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
   projName: { fontSize: 16, fontWeight: 'bold', color: '#1E293B', marginBottom: 2 },
   locRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   projLoc: { fontSize: 12, color: '#64748B' },
 
-  progressSection: { marginBottom: 16 },
-  progressLabel: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
-  progressTitle: { fontSize: 12, fontWeight: '600', color: '#64748B' },
-  progressVal: { fontSize: 12, fontWeight: 'bold' },
-  progressBarBg: { height: 8, backgroundColor: '#F1F5F9', borderRadius: 4, overflow: 'hidden' },
-  progressBarFill: { height: '100%', borderRadius: 4 },
-
   cardFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderTopWidth: 1, borderTopColor: '#F8FAFC', paddingTop: 12 },
-  footerItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  footerText: { fontSize: 12, color: '#64748B', fontWeight: '500' },
   updateBtn: { backgroundColor: '#F1F5F9', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8 },
   updateBtnText: { fontSize: 12, color: '#312e59', fontWeight: 'bold' },
 
@@ -333,7 +323,4 @@ const styles = StyleSheet.create({
   progressInputContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 10 },
   progressBigInput: { fontSize: 48, fontWeight: 'bold', color: '#312e59', textAlign: 'center', minWidth: 100, borderBottomWidth: 2, borderBottomColor: '#E2E8F0' },
   percentText: { fontSize: 24, color: '#94A3B8', fontWeight: 'bold', marginLeft: 10 },
-
-  emptyState: { alignItems: 'center', justifyContent: 'center', marginTop: 50 },
-  emptyText: { color: '#94A3B8', marginTop: 10 }
 });

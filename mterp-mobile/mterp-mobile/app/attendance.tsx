@@ -3,8 +3,8 @@ import { View, Text, TouchableOpacity, StyleSheet, Image, ActivityIndicator } fr
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { router } from 'expo-router';
 import api from '../src/api';
-// IMPORT ALERT BARU
 import CustomAlert from '../components/CustomAlert';
+import { Button } from '../components/shared';
 
 export default function AttendanceScreen() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -26,9 +26,12 @@ export default function AttendanceScreen() {
     return (
       <View style={styles.container}>
         <Text style={{ textAlign: 'center', color: '#fff', marginBottom: 20 }}>Butuh izin kamera</Text>
-        <TouchableOpacity style={styles.btnRetake} onPress={requestPermission}>
-          <Text style={styles.btnText}>Izinkan</Text>
-        </TouchableOpacity>
+        <Button 
+          title="Izinkan" 
+          onPress={requestPermission}
+          variant="primary"
+          style={{ alignSelf: 'center' }}
+        />
       </View>
     );
   }
@@ -117,13 +120,20 @@ export default function AttendanceScreen() {
         <View style={styles.previewContainer}>
           <Image source={{ uri: photo }} style={styles.previewImage} />
           <View style={styles.actionButtons}>
-            <TouchableOpacity style={[styles.btn, styles.btnRetake]} onPress={() => setPhoto(null)}>
-              <Text style={styles.btnText}>Ulang Foto</Text>
-            </TouchableOpacity>
+            <Button
+              title="Ulang Foto"
+              onPress={() => setPhoto(null)}
+              variant="danger"
+              size="medium"
+            />
             
-            <TouchableOpacity style={[styles.btn, styles.btnUpload]} onPress={uploadAbsen} disabled={loading}>
-              {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnText}>KIRIM SEKARANG</Text>}
-            </TouchableOpacity>
+            <Button
+              title="KIRIM SEKARANG"
+              onPress={uploadAbsen}
+              variant="primary"
+              size="medium"
+              loading={loading}
+            />
           </View>
         </View>
       ) : (
