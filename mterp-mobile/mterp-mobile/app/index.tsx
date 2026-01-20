@@ -6,8 +6,10 @@ import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../src/api';
 import { Input, Button } from '../components/shared';
+import LoadingScreen from '../components/LoadingScreen';
 
 export default function LoginScreen() {
+  const [showLoading, setShowLoading] = useState(true);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,6 +28,11 @@ export default function LoginScreen() {
       setLoading(false);
     }
   };
+
+  // Show loading screen first
+  if (showLoading) {
+    return <LoadingScreen onFinish={() => setShowLoading(false)} />;
+  }
 
   return (
     <View style={styles.container}>

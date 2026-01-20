@@ -185,7 +185,7 @@ export default function ProjectDetailScreen() {
 
               <TouchableOpacity 
                 style={[styles.actionBtn, { flex: 1, backgroundColor: '#F59E0B' }]} 
-                onPress={() => router.push({ pathname: '/tools', params: { projectId: projectData._id } } as any)}
+                onPress={() => router.push({ pathname: '/project-tools', params: { projectId: projectData._id } } as any)}
               >
                 <Wrench color="#fff" size={24} />
                 <Text style={styles.actionBtnText}>Alat Proyek</Text>
