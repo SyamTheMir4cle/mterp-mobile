@@ -16,6 +16,9 @@ import { router } from 'expo-router';
 
 const AVAILABLE_ROLES = [
   { id: 'owner', label: 'Owner', color: '#EF4444', description: 'Full system access' },
+  { id: 'pres_dir', label: 'President Director', color: '#7C3AED', description: 'Top-level approval' },
+  { id: 'ops_dir', label: 'Operational Director', color: '#C026D3', description: 'Operations & Planning' },
+  { id: 'finance', label: 'Finance', color: '#059669', description: 'Financial approval' },
   { id: 'director', label: 'Director', color: '#F59E0B', description: 'Management oversight' },
   { id: 'supervisor', label: 'Supervisor', color: '#10B981', description: 'Project supervision' },
   { id: 'admin_project', label: 'Project Admin', color: '#3B82F6', description: 'Project administration' },
